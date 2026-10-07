@@ -1,10 +1,20 @@
 use binary_codec::BinaryCodec;
-use binary_codec_macro::BinCodec;
-use bytes::BytesMut;
+use bytes::{Buf, BufMut, Bytes, BytesMut};
 
-#[derive(Debug, PartialEq, BinCodec)]
+#[derive(Debug, PartialEq)]
 pub struct TestMessage {
     pub number: u16,
+}
+
+impl BinaryCodec for TestMessage {
+    fn encode(&self, buf: &mut BytesMut) {
+        buf.put_u16(self.number);
+    }
+
+    fn decode(buf: &mut Bytes) -> Option<TestMessage> {
+        let number = buf.get_u16();
+        Some(Self { number })
+    }
 }
 
 fn main() {
